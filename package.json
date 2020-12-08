@@ -1,0 +1,11 @@
+{
+  "name": "advent2020",
+  "version": "1.0.0",
+  "description": "Advent of Code 2020",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "",
+  "license": "Apache-2.0"
+}
