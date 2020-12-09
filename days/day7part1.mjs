@@ -9,14 +9,15 @@ export default function() {
             console.error(err)
         } else {
             const lines = data.split(/\r?\n/)
-            const matcher = /^([ a-z]+) contain (no other bags|[0-9]+ [a-z ]+)(, [0-9]+ [a-z ]+)*?.$/
+            const matcher = /^([ a-z]+) contain ([a-z0-9, ]+)\.$/
             const colorMap = {}
             lines.forEach(line => {
                 const matches = line.match(matcher)
                 matches.shift()
                 var key = matches.shift()
                 key = key.substring(0, key.length - 1).trim()
-                const vals = matches.filter(x => x != null).map(x => x.replace(',', '').trim()).map(x => {
+                const rawVals = matches.shift().split(', ')
+                const vals = rawVals.filter(x => x != null).map(x => x.trim()).map(x => {
                     if (x === 'no other bags') {
                         return {
                             count: 0,
@@ -32,13 +33,15 @@ export default function() {
                     }
                 })
                 colorMap[key] = vals
+                    //console.log(key, "=>", vals)
             })
             const getHoldCount = (selColor) => {
                 var count = 0
                 var currentColors = [selColor]
+                const colorSet = new Set(selColor)
                 while (currentColors.length > 0) {
-                    console.log(currentColors)
-                    console.log(count)
+                    //console.log(currentColors)
+                    //console.log(count)
                     const buffer = []
                     for (const [key, vals] of Object.entries(colorMap)) {
                         const filtered = vals.filter(x => {
@@ -47,8 +50,9 @@ export default function() {
                             }
                             return false
                         })
-                        if (filtered.length > 0 && currentColors.filter(z => z === key).length === 0) {
+                        if (filtered.length > 0 && !colorSet.has(key)) {
                             buffer.push(key)
+                            colorSet.add(key)
                         }
                     }
                     count += buffer.length
